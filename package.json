@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "final-form": "^4.12.0",
+    "formik": "^1.5.4",
     "itertools": "^1.3.2",
     "minimal-lisp": "^1.0.3",
     "paho-mqtt": "^1.1.0",
