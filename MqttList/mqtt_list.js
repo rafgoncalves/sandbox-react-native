@@ -14,20 +14,16 @@ export default class MQTTList extends Component {
   constructor(props){
     super(props);
 
-    const mqtt_host = 'broker.mqttdashboard.com';
-    const mqtt_port = 8000
-    const mqtt_client_id = "reactNativeRafael";
-
     this.mqtt_client  = new Client(
-      host=mqtt_host, 
-      port=mqtt_port, 
-      clientId=mqtt_client_id
+      host='broker.mqttdashboard.com',
+      port=8000, 
+      clientId="reactNativeRafael"
     ),
+
+    this.mqtt_subscription_topic = 'flatlist';
 
     this.state = {
       mqtt_messages: new Array(),
-      mqtt_host, 
-      mqtt_client_id
     }
   }
 
@@ -46,7 +42,7 @@ export default class MQTTList extends Component {
           ...prevState,
           mqtt_messages: [
             ...prevState.mqtt_messages,
-            { key: message.payloadString + " QOS: " + message.qos }
+            { key: message.payloadString + " QoS: " + message.qos }
           ]
         }
       })
@@ -59,7 +55,7 @@ export default class MQTTList extends Component {
         this.mqtt_client.subscribe("flatlist", {qos: 2});
   
         message = new Message("Hello from " + this.mqtt_client.clientId);
-        message.destinationName = "flatlist";
+        message.destinationName = this.mqtt_subscription_topic;
         this.mqtt_client.send(message);
 
         let i = 0;
@@ -67,7 +63,7 @@ export default class MQTTList extends Component {
         this.interval_handle = setInterval(() => {
           if(this.mqtt_client.isConnected()){
             message = new Message("Test message #" + i++);
-            message.destinationName = "flatlist";
+            message.destinationName = this.mqtt_subscription_topic;
             this.mqtt_client.send(message);
           }
         }, 200);
