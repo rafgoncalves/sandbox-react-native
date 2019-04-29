@@ -22,6 +22,18 @@ export default class Home extends Component {
             this.props.navigation.navigate('MQTTList')
           }
         />
+        <Button
+          title="Custom Form"
+          onPress={() =>
+            this.props.navigation.navigate('CustomForm')
+          }
+        />
+        <Button
+          title="Maps"
+          onPress={() =>
+            this.props.navigation.navigate('Maps')
+          }
+        />
       </View>
     );
   }
