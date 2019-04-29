@@ -27,7 +27,7 @@ export default class MQTTList extends Component {
     }
   }
 
-  startMQTTClient() {
+  _startMQTTClient() {
     this.mqtt_client.onConnectionLost = (responseObject) => {
       if (responseObject.errorCode !== 0) {
         console.log("onConnectionLost:" + responseObject.errorMessage);
@@ -80,7 +80,7 @@ export default class MQTTList extends Component {
   }
 
   componentDidMount(){
-    this.startMQTTClient();
+    this._startMQTTClient();
   }
 
   componentWillUnmount(){
