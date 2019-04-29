@@ -46,7 +46,7 @@ export default class MQTTList extends Component {
           ...prevState,
           mqtt_messages: [
             ...prevState.mqtt_messages,
-            { key: message.payloadString }
+            { key: message.payloadString + " QOS: " + message.qos }
           ]
         }
       })
@@ -56,7 +56,7 @@ export default class MQTTList extends Component {
  
     this.mqtt_client.connect({
       onSuccess: onSuccess = () => {
-        this.mqtt_client.subscribe("flatlist");
+        this.mqtt_client.subscribe("flatlist", {qos: 2});
   
         message = new Message("Hello from " + this.mqtt_client.clientId);
         message.destinationName = "flatlist";
