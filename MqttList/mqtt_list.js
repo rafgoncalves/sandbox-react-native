@@ -61,6 +61,13 @@ export default class MQTTList extends Component {
         message = new Message("Hello from " + this.mqtt_client.clientId);
         message.destinationName = "flatlist";
         this.mqtt_client.send(message);
+
+        let i = 0;
+        setInterval(() => {
+          message = new Message("Test message #" + i++);
+          message.destinationName = "flatlist";
+          this.mqtt_client.send(message);
+        }, 500);
       }
     });
   }
