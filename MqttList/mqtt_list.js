@@ -63,17 +63,33 @@ export default class MQTTList extends Component {
         this.mqtt_client.send(message);
 
         let i = 0;
-        setInterval(() => {
-          message = new Message("Test message #" + i++);
-          message.destinationName = "flatlist";
-          this.mqtt_client.send(message);
-        }, 500);
+
+        this.interval_handle = setInterval(() => {
+          if(this.mqtt_client.isConnected()){
+            message = new Message("Test message #" + i++);
+            message.destinationName = "flatlist";
+            this.mqtt_client.send(message);
+          }
+        }, 200);
+
+        this.mqtt_client.onConnectionLost = () => this._clearTestMessageInterval();
       }
+
     });
+
+  }
+
+  _clearTestMessageInterval(){
+    return this.interval_handle || clearInterval(this.interval_handle);
   }
 
   componentDidMount(){
     this.startMQTTClient();
+  }
+
+  componentWillUnmount(){
+    this._clearTestMessageInterval();
+    this.mqtt_client.disconnect();
   }
 
   render() {
