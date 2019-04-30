@@ -5,17 +5,10 @@ import { Formik, Field } from 'formik';
 import miniMAL from 'minimal-lisp';
 import MiniMALCore from '../miniMAL_core';
 import custom_form from './custom_fom';
+import {fieldfy, get_initial_values} from './form_utils';
 
 const m = miniMAL(global);
 m.eval(MiniMALCore);
-
-
-function get_initial_values(custom_form){
-  const cf_initials = {};
-  custom_form.fields.map((f) => {cf_initials[f.name] = f.initial});
-
-  return cf_initials;
-}
 
 function get_component(name){
   const components = {
@@ -23,20 +16,6 @@ function get_component(name){
   }
 
   return components[name];
-}
-
-function fieldfy(component){
-
-  return (props) => {
-    const {field, form} = props;
-
-    field.onChange = form.handleChange(field.name);
-    field.onBlur = form.handleBlur(field.name);
-    field.error = form.errors[field.name];
-    field.touched = form.touched[field.name];
-
-    return component(props);
-  }
 }
 
 const Switch = fieldfy((props) => {
