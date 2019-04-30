@@ -1,43 +1,63 @@
 import React, {Component, PureComponent} from 'react';
 import {View, Text, Button, TextInput, Switch as RNSwitch} from 'react-native';
 import Styles from '../styles';
-import { Formik } from 'formik';
-import { withFormikControl } from 'react-native-formik';
+import { Formik, Field } from 'formik';
+import miniMAL from 'minimal-lisp';
 
-// TODO: https://codeburst.io/react-native-and-forms-redeux-part-1-9716f11b7ace
+const m = miniMAL(global);
 
-const Switch  = withFormikControl(class extends React.PureComponent {
-    render() {
-      const { error, value, setFieldValue, label } = this.props;
+function fieldfy(component){
 
-      return (
-        <React.Fragment>
-          <RNSwitch
-            value={value}
-            ios_backgroundColor={error ? "red" : "transparent"}
-            onValueChange={setFieldValue}
-          />
-          <Text>{label}</Text>
-        </React.Fragment>
-      );
-    }
+  return (props) => {
+    const {field, form} = props;
+
+    field.onChange = form.handleChange(field.name);
+    field.onBlur = form.handleBlur(field.name);
+    field.error = form.errors[field.name];
+    field.touched = form.touched[field.name];
+
+    return component(props);
   }
-);
+}
+
+const Switch = fieldfy((props) => {
+  const { field: {value, error, onBlur, onChange}, label} = props;
+
+  return (
+    <React.Fragment>
+      <RNSwitch
+        value={value}
+        onValueChange={(...params) => {onBlur(...params); onChange(...params);}}
+        ios_backgroundColor={error ? 'red' : 'trasparent'}
+      />
+      <Text>{label}</Text>
+    </React.Fragment>
+  );
+});
 
 const MyReactNativeForm = props => (
   <Formik
-    initialValues={{ email: '' }}
+    initialValues={{
+      email: '', 
+      termsAndConditionsAccepted: true,
+    }}
     onSubmit={values => console.log(values)}
   >
-    {props => (
+    {({errors, touched}) => (
       <View>
-        <TextInput
-          onChangeText={props.handleChange('email')}
-          onBlur={props.handleBlur('email')}
-          value={props.values.email}
+        <Field component={Switch}
+          validate={(value) => m.eval(
+
+              ['if', ['=', value, false], 
+                ['`', 'This must be true']]
+            
+          )}
+
+          label="Accept terms and conditions" 
+          name="termsAndConditionsAccepted" 
         />
 
-        <Switch label="Accept terms and conditions" name="termsAndConditionsAccepted" />
+        {touched.termsAndConditionsAccepted && errors.termsAndConditionsAccepted ? <Text>{errors.termsAndConditionsAccepted}</Text> : null}
 
         <Button onPress={props.handleSubmit} title="Submit" />
       </View>
@@ -54,8 +74,7 @@ export default class CustomForm extends Component {
     return (
       <View style={Styles.container}>
         <Text style={Styles.welcome}>Hey look, there's a form!</Text>
-        <MyReactNativeForm
-        />
+        <MyReactNativeForm />
       </View>
     );
   }
