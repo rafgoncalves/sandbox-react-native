@@ -21,6 +21,13 @@ export default Styles = StyleSheet.create({
     },
     basiclist: {
         width: '100%'
+    },
+    center: {
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    error_msg: {
+      color: 'red'
     }
   });
   

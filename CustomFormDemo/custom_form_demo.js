@@ -6,6 +6,52 @@ import miniMAL from 'minimal-lisp';
 
 const m = miniMAL(global);
 
+const custom_form = {
+  fields: [
+      {
+        type: 'Switch',
+        name: 'termsAndConditionsAccepted',
+        label: 'Accept terms and conditions',
+        validate: '["if", ["=", "value", false], ["`", "This must be true"]]',
+        key: 12123,
+        initial: true,
+      },
+
+      {
+        type: 'Switch',
+        name: 'bogus',
+        label: 'Something entirely bogus',
+        validate: '["if", ["=", "value", true], ["`", "This must be false"]]',
+        key: 34245,
+        initial: false,
+      },   
+
+      {
+        type: 'Switch',
+        name: 'bogus2',
+        label: 'Third time is a charm',
+        validate: '["if", ["=", "value", false], ["`", "This must be true"]]',
+        key: 3424,
+        initial: false,
+      },   
+    ]
+}
+
+function get_initial_values(custom_form){
+  const cf_initials = {};
+  custom_form.fields.map((f) => {cf_initials[f.name] = f.initial});
+
+  return cf_initials;
+}
+
+function get_component(name){
+  const components = {
+    Switch: Switch,
+  }
+
+  return components[name];
+}
+
 function fieldfy(component){
 
   return (props) => {
@@ -21,48 +67,42 @@ function fieldfy(component){
 }
 
 const Switch = fieldfy((props) => {
-  const { field: {value, error, onBlur, onChange}, label} = props;
+  const { field: {name, value, error, touched, onBlur, onChange}, label} = props;
 
   return (
     <React.Fragment>
       <RNSwitch
         value={value}
         onValueChange={(...params) => {onBlur(...params); onChange(...params);}}
-        ios_backgroundColor={error ? 'red' : 'trasparent'}
+        // ios_backgroundColor={error ? 'red' : 'trasparent'}
       />
+      {error && touched ? <Text style={Styles.error_msg}>{error}</Text> : null}
       <Text>{label}</Text>
     </React.Fragment>
   );
 });
 
 const MyReactNativeForm = props => (
-  <Formik
-    initialValues={{
-      email: '', 
-      termsAndConditionsAccepted: true,
-    }}
-    onSubmit={values => console.log(values)}
-  >
-    {({errors, touched}) => (
-      <View>
-        <Field component={Switch}
-          validate={(value) => m.eval(
-
-              ['if', ['=', value, false], 
-                ['`', 'This must be true']]
-            
-          )}
-
-          label="Accept terms and conditions" 
-          name="termsAndConditionsAccepted" 
-        />
-
-        {touched.termsAndConditionsAccepted && errors.termsAndConditionsAccepted ? <Text>{errors.termsAndConditionsAccepted}</Text> : null}
-
-        <Button onPress={props.handleSubmit} title="Submit" />
-      </View>
-    )}
-  </Formik>
+    <Formik 
+      initialValues={get_initial_values(custom_form)}
+      onSubmit={values => console.log(values)}
+    >
+      {({errors, touched, handleSubmit}) => (
+        <View  style={Styles.center}>
+          {
+            custom_form.fields.map((f) => (
+              <Field component={get_component(f.type)}
+                validate={(value) => m.eval(['let', ['value', value], JSON.parse(f.validate)])}
+                label={f.label}
+                name={f.name}
+                key={f.key}
+            />
+            ))
+          }
+          <Button onPress={handleSubmit} title="Submit" />
+        </View>
+      )}
+    </Formik>
 );
 
 export default class CustomForm extends Component {
