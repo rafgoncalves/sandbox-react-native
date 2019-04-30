@@ -5,34 +5,11 @@ import { Formik, Field } from 'formik';
 import miniMAL from 'minimal-lisp';
 import MiniMALCore from '../miniMAL_core';
 import custom_form from './custom_fom';
-import {fieldfy, get_initial_values} from './form_utils';
+import {get_initial_values} from './form_utils';
+import {get_component} from './form_components';
 
 const m = miniMAL(global);
 m.eval(MiniMALCore);
-
-function get_component(name){
-  const components = {
-    Switch: Switch,
-  }
-
-  return components[name];
-}
-
-const Switch = fieldfy((props) => {
-  const { field: {name, value, error, touched, onBlur, onChange}, label} = props;
-
-  return (
-    <React.Fragment>
-      <RNSwitch
-        value={value}
-        onValueChange={(...params) => {onBlur(...params); onChange(...params);}}
-        // ios_backgroundColor={error ? 'red' : 'trasparent'}
-      />
-      {error && touched ? <Text style={Styles.error_msg}>{error}</Text> : null}
-      <Text>{label}</Text>
-    </React.Fragment>
-  );
-});
 
 const MyReactNativeForm = props => (
     <Formik 
