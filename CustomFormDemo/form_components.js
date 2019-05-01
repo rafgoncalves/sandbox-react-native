@@ -6,13 +6,14 @@ import {fieldfy} from './form_utils';
 function get_component(name){
   const components = {
       Switch: Switch,
+      TextInput: TextInput,
     }
 
   return components[name];
 }
 
 const Switch = fieldfy((props) => {
-    const { field: {name, value, error, touched, onBlur, onChange}, label} = props;
+    const { field: {value, error, touched, onBlur, onChange}, label} = props;
 
     return (
       <React.Fragment>
@@ -29,7 +30,7 @@ const Switch = fieldfy((props) => {
 );
 
 const TextInput = fieldfy((props) => {
-    const { field: {name, value, error, touched, onBlur, onChange}, label, form} = props;
+    const { field: {value, onBlur, onChange}, label} = props;
 
     return (
       <React.Fragment>

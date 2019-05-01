@@ -34,7 +34,6 @@ const MyReactNativeForm = props => (
               : null
             )})
           }
-            <Field component={TextInput} name="SimpleTextInput" label="Simple Text Input"/>
           
           {/* <FieldArray
             name="friends"

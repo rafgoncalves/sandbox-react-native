@@ -6,7 +6,7 @@ export default custom_form = {
           label: 'Accept terms and conditions',
           validate: null,
           key: 12123,
-          initial: true,
+          initial: false,
           enable: true,
         },
   
@@ -33,5 +33,18 @@ export default custom_form = {
                                     ["target", ["get", "values", ["`", "termsAndConditionsAccepted"]]],
                                     "target"]),
         },   
+
+        {
+          type: 'TextInput',
+          name: 'some_text',
+          label: 'Where we are going we need no labels!',
+          validate: null,
+          key: 342345,
+          initial: 'Fill this!',
+          enable: JSON.stringify(["let", 
+                                    ["target", ["get", "values", ["`", "termsAndConditionsAccepted"]]],
+                                    "target"]),
+        },   
+
       ]
   }
