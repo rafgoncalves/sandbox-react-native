@@ -13,10 +13,10 @@ m.eval(MiniMALCore);
 
 const MyReactNativeForm = props => (
     <Formik 
-      initialValues={get_initial_values(custom_form)}
+      initialValues={{...get_initial_values(custom_form), friends: ['Alice', 'Bob']}}
       onSubmit={values => console.log(values)}
-    >
-      {({values, errors, touched, handleSubmit, ...rest}) => (
+      
+      render={({values, errors, touched, handleSubmit, ...rest}) => (
         <View  style={Styles.center}>
           {
             custom_form.fields.map((f) => {
@@ -26,7 +26,7 @@ const MyReactNativeForm = props => (
               return (
               enable ?
                 <Field component={get_component(f.type)}
-                  validate={(value) => m.eval(['let', ['value', value], JSON.parse(f.validate)])}
+                  validate={(value) => null}
                   label={f.label}
                   name={f.name}
                   key={f.key}
@@ -35,25 +35,30 @@ const MyReactNativeForm = props => (
             )})
           }
           
-          {/* <FieldArray
+          <FieldArray
             name="friends"
-            render={arrayHelpers => (
+            render={arrayHelpers => ( 
+              <View>
+              {
               (values.friends && values.friends.length > 0) ? (
                 values.friends.map((friend, index) =>(
                   <View key={index}>
-                    <Button onPress={} title="X" />
+                    <Button onPress={() => arrayHelpers.remove(index)} title="X" />
                     <Field component={TextInput} name={`friends.${index}`} />
                   </View>
                 ))) : (
-                  <Button onPress={handleSubmit} title="Insert!" />
+                  <Text>No Friends yet</Text>
                 ) 
+              }
+                <Button onPress={() => arrayHelpers.push('')}title="Insert!" />
+              </View>
             )}
 
-          /> */}
+          />
           <Button onPress={handleSubmit} title="Submit" />
         </View>
       )}
-    </Formik>
+    />
 );
 
 export default class CustomForm extends Component {

@@ -1,3 +1,5 @@
+import {getIn} from 'formik';
+
 function get_initial_values(custom_form){
   const cf_initials = {};
   custom_form.fields.map((f) => {cf_initials[f.name] = f.initial});
@@ -8,13 +10,13 @@ function get_initial_values(custom_form){
 function fieldfy(component){
 
   return (props) => {
-    const {field, form, values} = props;
+    const {field, form} = props;
 
     field.onChange = form.handleChange(field.name);
     field.onBlur = form.handleBlur(field.name);
-    field.error = form.errors[field.name];
-    field.touched = form.touched[field.name];
-    field.value = form.values[field.name];
+    field.error = getIn(form.errors, field.name);
+    field.touched = getIn(form.touched ,field.name);
+    field.value = getIn(form.values, field.name);
 
     return component(props);
   }

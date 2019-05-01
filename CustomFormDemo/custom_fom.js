@@ -4,7 +4,7 @@ export default custom_form = {
           type: 'Switch',
           name: 'termsAndConditionsAccepted',
           label: 'Accept terms and conditions',
-          validate: null,
+          validate: 'null',
           key: 12123,
           initial: false,
           enable: true,
