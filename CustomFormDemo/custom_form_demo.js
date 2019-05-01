@@ -1,12 +1,12 @@
-import React, {Component, PureComponent} from 'react';
-import {View, Text, Button, TextInput, Switch as RNSwitch} from 'react-native';
+import React, {Component} from 'react';
+import {View, Text, Button} from 'react-native';
 import Styles from '../styles';
-import { Formik, Field } from 'formik';
+import { Formik, Field, FieldArray} from 'formik';
 import miniMAL from 'minimal-lisp';
 import MiniMALCore from '../miniMAL_core';
 import custom_form from './custom_fom';
 import {get_initial_values} from './form_utils';
-import {get_component} from './form_components';
+import {get_component, TextInput} from './form_components';
 
 const m = miniMAL(global);
 m.eval(MiniMALCore);
@@ -34,6 +34,23 @@ const MyReactNativeForm = props => (
               : null
             )})
           }
+            <Field component={TextInput} name="SimpleTextInput" label="Simple Text Input"/>
+          
+          {/* <FieldArray
+            name="friends"
+            render={arrayHelpers => (
+              (values.friends && values.friends.length > 0) ? (
+                values.friends.map((friend, index) =>(
+                  <View key={index}>
+                    <Button onPress={} title="X" />
+                    <Field component={TextInput} name={`friends.${index}`} />
+                  </View>
+                ))) : (
+                  <Button onPress={handleSubmit} title="Insert!" />
+                ) 
+            )}
+
+          /> */}
           <Button onPress={handleSubmit} title="Submit" />
         </View>
       )}
