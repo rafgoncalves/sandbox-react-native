@@ -1,16 +1,18 @@
 import React, {Component} from 'react';
-import {View, Text, Button, Fragment} from 'react-native';
+import {View, Text, Button} from 'react-native';
 import Styles from '../styles';
 import { Formik, Field, FieldArray, getIn} from 'formik';
 import miniMAL from 'minimal-lisp';
 import MiniMALCore from '../miniMAL_core';
 import custom_form from './custom_fom';
-import {get_initial_values} from './form_utils';
-import {get_component, TextInput, Switch} from './form_components';
+import {get_initial_values, dict} from './form_utils';
+import {get_component} from './form_components';
 
 
 const m = miniMAL(global);
 m.eval(MiniMALCore);
+
+
 
 const RenderFieldTree = ({root, namespace=null, index=0, props}) =>{
   const renderFields = root.fields.map((f) => {
@@ -21,44 +23,50 @@ const RenderFieldTree = ({root, namespace=null, index=0, props}) =>{
       if(f.type === 'FieldArray'){   
         const values = getIn(props.values, f.name);
 
+        const initial_group = {}
+        for(c of f.fields)
+          initial_group[c.name] = c.initial;
+
         return (
           <FieldArray
             name={f.name}
             key={f.key}
             render={ arrayHelpers => ( 
               <View>
+                <Text>{f.label}</Text>
               {
               (values && values.length > 0) ? (
                 values.map((e, index) =>(
                   <View key={index}>
                     <Button onPress={() => arrayHelpers.remove(index)} title="X" />
-                    {
-                        f.fields.map((c) => (
-                        <Field component={get_component(c.type)}
-                          validate={(value) => m.eval(['let', ['value', value], JSON.parse(c.validate)])}
-                          label={c.label}
-                          name={`${f.name}.${index}.${c.name}`}
-                          key={`${f.name}.${index}.${f.key}`}
-                        />
-                      ))
-                    }
+                    <RenderFieldTree
+                      root={f}
+                      namespace={f.name} 
+                      props={props}
+                      index={index}
+                    />
                   </View>
                 ))) : (
-                  <Text>No Friends yet</Text>
+                  <Text>{f.empty}</Text>
                 ) 
               }
-                <Button onPress={() => arrayHelpers.push('')}title="Insert!" />
+                <Button onPress={() => {arrayHelpers.push(dict(f.fields.map(f => [f.name, f.initial])))}} title="Insert!" />
               </View>
             )}
           />
         )
       } else {
+        const name = namespace ? `${namespace}.${index}.${f.name}`: f.name;
+        const key = namespace ? `${namespace}.${index}.${f.key}` : f.key;
+
         return (
+          
+
           <Field component={get_component(f.type)}
             validate={(value) => m.eval(['let', ['value', value], JSON.parse(f.validate)])}
             label={f.label}
-            name={f.name}
-            key={f.key}
+            name={name}
+            key={key}
           />
         )
       }
@@ -79,27 +87,6 @@ const MyReactNativeForm = (props) => (
               root={custom_form}
               props={props}
             />
-          
-          {/* <FieldArray
-            name="friends"
-            render={arrayHelpers => ( 
-              <View>
-              {
-              (props.values.friends && props.values.friends.length > 0) ? (
-                props.values.friends.map((friend, index) =>(
-                  <View key={index}>
-                    <Button onPress={() => arrayHelpers.remove(index)} title="X" />
-                    <Field component={TextInput} name={`friends.${index}.text`} />
-                    <Field component={Switch} name={`friends.${index}.switch`}/>
-                  </View>
-                ))) : (
-                  <Text>No Friends yet</Text>
-                ) 
-              }
-                <Button onPress={() => arrayHelpers.push('')}title="Insert!" />
-              </View>
-            )}
-          /> */}
           
           <Button onPress={props.handleSubmit} title="Submit" />
         </View>

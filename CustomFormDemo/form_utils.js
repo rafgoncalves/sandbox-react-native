@@ -22,4 +22,13 @@ function fieldfy(component){
   }
 }
 
-export {get_initial_values, fieldfy};
+function dict(iter){
+  const r = {};
+
+  for(let e of iter)
+    r[e[0]] = e[1];
+
+  return r;
+}
+
+export {get_initial_values, fieldfy, dict};
