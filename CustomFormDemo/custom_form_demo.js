@@ -18,10 +18,14 @@ const RenderFieldTree = ({root, namespace=null, index=0, props}) =>{
   const renderFields = root.fields.map((f) => {
               
     const enable = m.eval(['let', ['values', props.values], JSON.parse(f.enable)]);
-      
+    const name = namespace ? `${namespace}.${index}.${f.name}`: f.name;
+    const key = namespace ? `${namespace}.${index}.${f.key}` : f.key;
+
+    console.log(name);
+
     if (enable){
       if(f.type === 'FieldArray'){   
-        const values = getIn(props.values, f.name);
+        const values = getIn(props.values, name);
 
         const initial_group = {}
         for(c of f.fields)
@@ -29,8 +33,8 @@ const RenderFieldTree = ({root, namespace=null, index=0, props}) =>{
 
         return (
           <FieldArray
-            name={f.name}
-            key={f.key}
+            name={name}
+            key={key}
             render={ arrayHelpers => ( 
               <View>
                 <Text>{f.label}</Text>
@@ -41,7 +45,7 @@ const RenderFieldTree = ({root, namespace=null, index=0, props}) =>{
                     <Button onPress={() => arrayHelpers.remove(index)} title="X" />
                     <RenderFieldTree
                       root={f}
-                      namespace={f.name} 
+                      namespace={namespace ? `${namespace}.${index}.${f.name}`: f.name} 
                       props={props}
                       index={index}
                     />
@@ -56,12 +60,8 @@ const RenderFieldTree = ({root, namespace=null, index=0, props}) =>{
           />
         )
       } else {
-        const name = namespace ? `${namespace}.${index}.${f.name}`: f.name;
-        const key = namespace ? `${namespace}.${index}.${f.key}` : f.key;
-
+        
         return (
-          
-
           <Field component={get_component(f.type)}
             validate={(value) => m.eval(['let', ['value', value], JSON.parse(f.validate)])}
             label={f.label}
