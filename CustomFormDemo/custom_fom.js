@@ -1,50 +1,69 @@
+const _ = JSON.stringify;
+
 export default custom_form = {
     fields: [
         {
           type: 'Switch',
           name: 'termsAndConditionsAccepted',
           label: 'Accept terms and conditions',
-          validate: 'null',
-          key: 12123,
+          validate: _(null),
+          key: 1,
           initial: false,
-          enable: true,
+          enable: _(true),
         },
   
         {
           type: 'Switch',
           name: 'bogus',
           label: 'Test!',
-          validate: JSON.stringify(["if", ["=", "value", true], 
-                                      ["`", "This must be false"]]),
-          key: 34245,
+          validate: _(["if", ["=", "value", true], 
+                        ["`", "This must be false"]]),
+          key: 2,
           initial: false,
-          enable: true,
+          enable: _(true),
         },   
   
         {
           type: 'Switch',
           name: 'bogus2',
           label: 'Third time is a charm',
-          validate: JSON.stringify(["if", ["=", "value", false], 
-                                      ["`", "This must be true"]]),
-          key: 3424,
+          validate: _(["if", ["=", "value", false], 
+                        ["`", "This must be true"]]),
+          key: 3,
           initial: true,
-          enable: JSON.stringify(["let", 
-                                    ["target", ["get", "values", ["`", "termsAndConditionsAccepted"]]],
-                                    "target"]),
+          enable: _(["let", 
+                      ["target", ["get", "values", ["`", "termsAndConditionsAccepted"]]],
+                      "target"]),
         },   
 
         {
           type: 'TextInput',
           name: 'some_text',
           label: 'Where we are going we need no labels!',
-          validate: null,
-          key: 342345,
+          validate: _(null),
+          key: 4,
           initial: 'Fill this!',
-          enable: JSON.stringify(["let", 
-                                    ["target", ["get", "values", ["`", "termsAndConditionsAccepted"]]],
-                                    "target"]),
+          enable: _(["get", "values", ["`", "termsAndConditionsAccepted"]]),
         },   
 
+        {
+          type: 'FieldArray',
+          name: "friends",
+          label: "Manage your friends",
+          key: 5,
+          max: 5,    
+          enable: _(true),
+          fields:[
+            {
+              type: 'Switch',
+              name: 'sa',
+              label: 'Accept terms and conditions',
+              validate: _(null),
+              initial: true,
+              enable: _(true),
+            },
+          ],
+          empty: {}
+        }
       ]
   }
