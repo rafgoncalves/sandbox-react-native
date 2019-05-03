@@ -13,7 +13,7 @@ const m = miniMAL(global);
 m.eval(MiniMALCore);
 
 
-const RenderFieldTree = ({root, namespace=null, index=0, props}) =>{
+const RenderFieldTree = ({root, namespace=null, index=null, props}) =>{
   const renderFields = root.fields.map((f) => {
               
     const enable = m.eval(['let', ['values', props.values], JSON.parse(f.enable)]);
