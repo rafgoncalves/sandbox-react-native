@@ -38,8 +38,9 @@ export default custom_form = {
           name: 'some_text',
           label: 'Where we are going we need no labels!',
           validate: _(null),
-          initial: 'Fill this!',
-          enable: _(["get", "values", ["`", "termsAndConditionsAccepted"]]),
+          initial: 'Fill this text!',
+          enable: _(true)
+          // enable: _(["get", "values", ["`", "termsAndConditionsAccepted"]]),
         },   
 
         {

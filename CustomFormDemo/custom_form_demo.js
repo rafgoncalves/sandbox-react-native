@@ -26,7 +26,7 @@ const RenderFieldTree = ({root, namespace=null, index=0, props}) =>{
         const values = getIn(props.values, name);
 
         const initial_group = {}
-        for(c of f.fields)
+        for(let c of f.fields)
           initial_group[c.name] = c.initial;
 
         return (
@@ -65,10 +65,10 @@ const RenderFieldTree = ({root, namespace=null, index=0, props}) =>{
         
         return (
           <Field component={get_component(f.type)}
-            validate={(value) => m.eval(['let', ['value', value], JSON.parse(f.validate)])}
-            label={f.label}
-            name={name}
-            key={name}
+          label={f.label}
+          name={name}
+          key={name}
+          validate={(value) => m.eval(['let', ['value', ['`', value]], JSON.parse(f.validate)])}
           />
         )
       }
@@ -78,7 +78,8 @@ const RenderFieldTree = ({root, namespace=null, index=0, props}) =>{
   return renderFields;
 }
 
-const MyReactNativeForm = (props) => (
+const MyReactNativeForm = (props) => {
+  return (
     <Formik 
       initialValues={{...get_initial_values(custom_form), }}
       onSubmit={values => console.log(values)}
@@ -90,12 +91,15 @@ const MyReactNativeForm = (props) => (
               props={props}
             />
           
-          <Button onPress={props.handleSubmit} title="Submit" />
+          <Button onPress={(...args) => {
+                                          props.handleSubmit(...args); 
+                                          console.log(props.errors)}}
+          title="Submit" />
         </ScrollView>
       )}
     />
-);
-
+  );
+}
 export default class CustomForm extends Component {
   static navigationOptions = {
     title: 'Custom Form',
