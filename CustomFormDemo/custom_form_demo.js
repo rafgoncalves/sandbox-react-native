@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {View, Text, Button} from 'react-native';
+import {View, Text, Button, ScrollView} from 'react-native';
 import Styles from '../styles';
 import { Formik, Field, FieldArray, getIn} from 'formik';
 import miniMAL from 'minimal-lisp';
@@ -21,8 +21,6 @@ const RenderFieldTree = ({root, namespace=null, index=0, props}) =>{
     const name = namespace ? `${namespace}.${index}.${f.name}`: f.name;
     const key = namespace ? `${namespace}.${index}.${f.key}` : f.key;
 
-    console.log(name);
-
     if (enable){
       if(f.type === 'FieldArray'){   
         const values = getIn(props.values, name);
@@ -34,27 +32,31 @@ const RenderFieldTree = ({root, namespace=null, index=0, props}) =>{
         return (
           <FieldArray
             name={name}
-            key={key}
+            key={name}
             render={ arrayHelpers => ( 
-              <View>
+              <View style={{width: '100%',  alignItems: 'center'}}>
                 <Text>{f.label}</Text>
               {
-              (values && values.length > 0) ? (
-                values.map((e, index) =>(
-                  <View key={index} style={Styles.terminal}>
-                    <Button onPress={() => arrayHelpers.remove(index)} title="X" />
-                    <RenderFieldTree
-                      root={f}
-                      namespace={name} 
-                      props={props}
-                      index={index}
-                    />
-                  </View>
-                ))) : (
-                  <Text>{f.empty}</Text>
-                ) 
+                (values && values.length > 0) ? (
+                  values.map((e, index) =>(
+                    <View key={index} style={Styles.terminal}>
+                      <Button onPress={() => arrayHelpers.remove(index)} title="X" />
+                      <RenderFieldTree
+                        root={f}
+                        namespace={name} 
+                        props={props}
+                        index={index}
+                      />
+                    </View>
+                  ))) : (
+                    <Text>{f.empty}</Text>
+                  ) 
               }
-                <Button onPress={() => {arrayHelpers.push(dict(f.fields.map(f => [f.name, f.initial])))}} title="Insert!" />
+
+              {
+                (values && values.length >= f.max) ?
+                  null : <Button onPress={() => {arrayHelpers.push(dict(f.fields.map(f => [f.name, f.initial])))}} title="Insert!" /> 
+              }
               </View>
             )}
           />
@@ -66,7 +68,7 @@ const RenderFieldTree = ({root, namespace=null, index=0, props}) =>{
             validate={(value) => m.eval(['let', ['value', value], JSON.parse(f.validate)])}
             label={f.label}
             name={name}
-            key={key}
+            key={name}
           />
         )
       }
@@ -82,14 +84,14 @@ const MyReactNativeForm = (props) => (
       onSubmit={values => console.log(values)}
       
       render={(props) => (
-        <View style={Styles.center}>
+        <ScrollView style={{width: '100%'}} contentContainerStyle={Styles.center}>
             <RenderFieldTree
               root={custom_form}
               props={props}
             />
           
           <Button onPress={props.handleSubmit} title="Submit" />
-        </View>
+        </ScrollView>
       )}
     />
 );

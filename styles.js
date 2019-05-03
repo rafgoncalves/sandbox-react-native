@@ -25,6 +25,7 @@ export default Styles = StyleSheet.create({
     center: {
       justifyContent: 'center',
       alignItems: 'center',
+      width: '100%',
     },
     error_msg: {
       color: 'red'
@@ -32,7 +33,8 @@ export default Styles = StyleSheet.create({
 
     terminal: {
       backgroundColor: 'rgba(0,0,0,0.1)',
-      
+      width: '100%',
+      alignItems: 'center'
     }
 
 
