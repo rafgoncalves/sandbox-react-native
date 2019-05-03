@@ -4,7 +4,7 @@ import Styles from '../styles';
 import { Formik, Field, FieldArray, getIn} from 'formik';
 import miniMAL from 'minimal-lisp';
 import MiniMALCore from '../miniMAL_core';
-import custom_form from './custom_fom';
+import custom_form from './custom_form';
 import {get_initial_values, dict} from './form_utils';
 import {get_component} from './form_components';
 
@@ -13,21 +13,15 @@ const m = miniMAL(global);
 m.eval(MiniMALCore);
 
 
-
 const RenderFieldTree = ({root, namespace=null, index=0, props}) =>{
   const renderFields = root.fields.map((f) => {
               
     const enable = m.eval(['let', ['values', props.values], JSON.parse(f.enable)]);
     const name = namespace ? `${namespace}.${index}.${f.name}`: f.name;
-    const key = namespace ? `${namespace}.${index}.${f.key}` : f.key;
 
     if (enable){
       if(f.type === 'FieldArray'){   
         const values = getIn(props.values, name);
-
-        const initial_group = {}
-        for(let c of f.fields)
-          initial_group[c.name] = c.initial;
 
         return (
           <FieldArray
@@ -91,10 +85,7 @@ const MyReactNativeForm = (props) => {
               props={props}
             />
           
-          <Button onPress={(...args) => {
-                                          props.handleSubmit(...args); 
-                                          console.log(props.errors)}}
-          title="Submit" />
+          <Button onPress={props.handleSubmit} title="Submit" />
         </ScrollView>
       )}
     />
