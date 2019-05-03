@@ -28,6 +28,13 @@ export default Styles = StyleSheet.create({
     },
     error_msg: {
       color: 'red'
+    },
+
+    terminal: {
+      backgroundColor: 'rgba(0,0,0,0.1)',
+      
     }
+
+
   });
   

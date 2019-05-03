@@ -41,11 +41,11 @@ const RenderFieldTree = ({root, namespace=null, index=0, props}) =>{
               {
               (values && values.length > 0) ? (
                 values.map((e, index) =>(
-                  <View key={index}>
+                  <View key={index} style={Styles.terminal}>
                     <Button onPress={() => arrayHelpers.remove(index)} title="X" />
                     <RenderFieldTree
                       root={f}
-                      namespace={namespace ? `${namespace}.${index}.${f.name}`: f.name} 
+                      namespace={name} 
                       props={props}
                       index={index}
                     />
