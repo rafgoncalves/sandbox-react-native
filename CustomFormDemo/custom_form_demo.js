@@ -32,8 +32,8 @@ class RenderFieldTree extends PureComponent{
                   <RenderFieldTree
                     root={fieldArray}
                     namespace={name} 
-                    props={props}
                     index={index}
+                    {...props}
                   />
                 </View>
               ))) : (
@@ -63,7 +63,7 @@ class RenderFieldTree extends PureComponent{
   }
 
   render(){
-    const {root, namespace=null, index=null, props} = this.props;
+    const {root, namespace=null, index=null, ...props} = this.props;
 
     const renderFields = root.fields.map((f) => {
                 
@@ -99,7 +99,7 @@ const MyReactNativeForm = (props) => {
         <ScrollView style={{width: '100%'}} contentContainerStyle={Styles.center}>
             <RenderFieldTree
               root={custom_form}
-              props={props}
+              {...props}
             />
           
           <Button onPress={props.handleSubmit} title="Submit" />
