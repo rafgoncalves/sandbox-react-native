@@ -1,4 +1,4 @@
-import React, {PureComponent} from 'react';
+import React, {PureComponent, useState} from 'react';
 import {View, Text, Button, ScrollView} from 'react-native';
 import Styles from '../styles';
 import { Formik, Field, FieldArray, getIn} from 'formik';
@@ -12,9 +12,10 @@ const m = miniMAL(global);
 m.eval(MiniMALCore);
 
 
-class RenderFieldTree extends PureComponent{
+function RenderFieldTree(props){
+  const {root, namespace=null, index=null, set_enabled, ...rest} = props;
 
-  renderFieldArray(fieldArray, values, name, set_enabled, props){
+  const renderFieldArray = (fieldArray, values, name, set_enabled, props) => {
   
     return(
       <FieldArray
@@ -51,7 +52,7 @@ class RenderFieldTree extends PureComponent{
       )
   }
 
-  _renderField(component, label, name, validate, props){
+  const renderField = (component, label, name, validate, props) => {
     return (
       <Field component={get_component(component)}
       label={label}
@@ -63,64 +64,55 @@ class RenderFieldTree extends PureComponent{
     )
   }
 
-  render(){
-    const {root, namespace=null, index=null, set_enabled, ...props} = this.props;
-
-    return root.fields.map((f) => {
+  return root.fields.map((f) => {
+  
+    const name = namespace ? `${namespace}.${index}.${f.name}`: f.name;
+    const value = getIn(props.values, name);
+    const enable = m.eval(['let', ['values', props.values], JSON.parse(f.enable)]);
+    const value_exists_and_not_fieldarray = value !== undefined && typeof(value) !== 'object';
     
-      const name = namespace ? `${namespace}.${index}.${f.name}`: f.name;
-      const values = getIn(props.values, name);
-      const enable = m.eval(['let', ['values', props.values], JSON.parse(f.enable)]);
-      const value_exists_and_not_fieldarray = values !== undefined && typeof(values) !== 'object';
-      
-      set_enabled(name, enable && value_exists_and_not_fieldarray);
+    set_enabled(name, enable && value_exists_and_not_fieldarray);
 
-      if (enable){
-        return (f.type === 'FieldArray') ? 
-          this.renderFieldArray(f, values, name, set_enabled, props) :
-          this._renderField(f.type, f.label, name, f.validate, props)
-        }
+    if (enable){
+      return (f.type === 'FieldArray') ? 
+        renderFieldArray(f, value, name, set_enabled, rest) :
+        renderField(f.type, f.label, name, f.validate, rest)
       }
-    )
-  }
-
+    }
+  )
 }
 
+export default function DynamicForm(props) {
+  const {spec} = props
 
-export default class DynamicForm extends PureComponent {
-  constructor(props){
-    super(props);
-    this.enabled = new Set();
-    this.spec = props.spec
+  const [enabled, setEnabled] = useState(new Set());
+
+  const _set_enabled = (fieldname, flag) => {
+    flag ? enabled.add(fieldname) : enabled.delete(fieldname);
+    setEnabled(enabled);
   }
 
-  _set_enabled = (fieldname, flag) => {
-    flag ? this.enabled.add(fieldname) : this.enabled.delete(fieldname)
-  }
-
-  _handle_submit = (values) => {
+  const _handle_submit = (values) => {
     console.log(values);
-    console.log(this.enabled);
+    console.log(enabled);
   }
-  
-  render = () => {
-    return (
-      <Formik 
-        initialValues={{...get_initial_values(this.spec)}} 
-        onSubmit={this._handle_submit}
-        
-        render={(props) => (
-          <ScrollView style={{width: '100%'}} contentContainerStyle={Styles.center}>
-              <RenderFieldTree
-                root={this.spec}
-                set_enabled={this._set_enabled}
-                {...props}
-              />
-            
-            <Button onPress={props.handleSubmit} title="Submit" />
-          </ScrollView>
-        )}
-      />
-    );
-  }
+
+  return (
+    <Formik 
+      initialValues={{...get_initial_values(spec)}} 
+      onSubmit={_handle_submit}
+      
+      render={(props) => (
+        <ScrollView style={{width: '100%'}} contentContainerStyle={Styles.center}>
+            <RenderFieldTree
+              root={spec}
+              set_enabled={_set_enabled}
+              {...props}
+            />
+          
+          <Button onPress={props.handleSubmit} title="Submit" />
+        </ScrollView>
+      )}
+    />
+  );
 }
