@@ -32,8 +32,9 @@ function LispDemoScreen(props){
 
   const m = _bindMiniMAL();
 
-  const [stopRotations] = useState(function* () {let r = 0; while(true) yield r += 45}())
-  const [colorGenerator] = useState(cycle(['powderblue', 'skyblue', 'steelblue', 'orange', 'darkorange']));
+  const {colors, rotation_step} = props;
+  const [stopRotations] = useState(function* () {let r = 0; while(true) yield r += rotation_step}())
+  const [colorGenerator] = useState(cycle(colors));
   const [color, setColor] = useState(colorGenerator.next().value);
   const [randomNumber, setRandomNumber] = useState(m.eval(['random']));
   const [rotation] = useState(new Animated.Value(0));
@@ -57,7 +58,10 @@ export default class LispDemo extends Component {
 
   render() {
     return(
-      <LispDemoScreen />
+      <LispDemoScreen 
+        colors={['powderblue', 'skyblue', 'steelblue', 'orange', 'darkorange']}
+        rotation_step={45}
+      />
     )
   }
 }
