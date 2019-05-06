@@ -15,7 +15,7 @@ m.eval(MiniMALCore);
 
 class RenderFieldTree extends PureComponent{
 
-  renderFieldArray(fieldArray, values, name, props){
+  renderFieldArray(fieldArray, values, name, set_enabled, props){
   
     return(
       <FieldArray
@@ -33,6 +33,7 @@ class RenderFieldTree extends PureComponent{
                     root={fieldArray}
                     namespace={name} 
                     index={index}
+                    set_enabled={set_enabled}
                     {...props}
                   />
                 </View>
@@ -51,33 +52,37 @@ class RenderFieldTree extends PureComponent{
       )
   }
 
-  _renderField(component, label, name, validate){
+  _renderField(component, label, name, validate, props){
     return (
       <Field component={get_component(component)}
       label={label}
       name={name}
       key={name}
       validate={(value) => m.eval(['let', ['value', ['`', value]], JSON.parse(validate)])}
+      {...props}
       />
     )
   }
 
   render(){
-    const {root, namespace=null, index=null, ...props} = this.props;
+    const {root, namespace=null, index=null, set_enabled, ...props} = this.props;
 
     const renderFields = root.fields.map((f) => {
                 
       const enable = m.eval(['let', ['values', props.values], JSON.parse(f.enable)]);
       const name = namespace ? `${namespace}.${index}.${f.name}`: f.name;
       
+      set_enabled(name, enable && getIn(props.values, name) !== undefined);
+
       if (enable){
+        
         if(f.type === 'FieldArray'){   
           const values = getIn(props.values, name);
-          return this.renderFieldArray(f, values, name, props);
+          return this.renderFieldArray(f, values, name, set_enabled, props);
           
         } else {
   
-          return this._renderField(f.type, f.label, name, f.validate)
+          return this._renderField(f.type, f.label, name, f.validate, props)
         }
       }
     });
@@ -88,26 +93,43 @@ class RenderFieldTree extends PureComponent{
 }
 
 
+class MyReactNativeForm extends Component {
+  constructor(props){
+    super(props);
+    this.enabled = new Set();
+  }
 
-const MyReactNativeForm = (props) => {
-  return (
-    <Formik 
-      initialValues={{...get_initial_values(custom_form), }} 
-      onSubmit={values => console.log(values)}
-      
-      render={(props) => (
-        <ScrollView style={{width: '100%'}} contentContainerStyle={Styles.center}>
-            <RenderFieldTree
-              root={custom_form}
-              {...props}
-            />
-          
-          <Button onPress={props.handleSubmit} title="Submit" />
-        </ScrollView>
-      )}
-    />
-  );
+  _set_enabled = (fieldname, flag) => {
+    flag ? this.enabled.add(fieldname) : this.enabled.delete(fieldname)
+  }
+
+  _handle_submit = (values) => {
+    console.log(values);
+    console.log(this.enabled);
+  }
+  
+  render = () => {
+    return (
+      <Formik 
+        initialValues={{...get_initial_values(custom_form), }} 
+        onSubmit={this._handle_submit}
+        
+        render={(props) => (
+          <ScrollView style={{width: '100%'}} contentContainerStyle={Styles.center}>
+              <RenderFieldTree
+                root={custom_form}
+                set_enabled={this._set_enabled}
+                {...props}
+              />
+            
+            <Button onPress={props.handleSubmit} title="Submit" />
+          </ScrollView>
+        )}
+      />
+    );
+  }
 }
+
 export default class CustomForm extends Component {
   static navigationOptions = {
     title: 'Custom Form',
