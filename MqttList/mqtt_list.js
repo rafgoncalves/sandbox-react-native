@@ -76,7 +76,7 @@ export default class MQTTList extends Component {
   }
 
   _clearTestMessageInterval(){
-    return this.interval_handle || clearInterval(this.interval_handle);
+    return this.interval_handle && clearInterval(this.interval_handle);
   }
 
   componentDidMount(){
