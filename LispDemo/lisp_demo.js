@@ -51,12 +51,7 @@ function LispDemoScreen(props){
   )
 }
 
-export default class LispDemo extends Component {
-  static navigationOptions = {
-    title: 'Lisp Demo',
-  }
-
-  render() {
+export default function LispDemo() {
     return(
       <LispDemoScreen 
         colors={['powderblue', 'skyblue', 'steelblue', 'orange', 'darkorange']}
@@ -64,4 +59,4 @@ export default class LispDemo extends Component {
       />
     )
   }
-}
+

@@ -7,7 +7,7 @@ import Maps from './MapsDemo/maps_demo';
 
 const AppNavigator = createStackNavigator({
   Home: { screen: Home },
-  LispDemo: { screen: LispDemo},
+  LispDemo: { screen: LispDemo, navigationOptions: {title: 'Lisp Demo'}},
   MQTTList: {screen: MQTTList},
   CustomForm: {screen: CustomForm},
   Maps: {screen: Maps}
