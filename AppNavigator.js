@@ -6,11 +6,11 @@ import CustomForm from './CustomFormDemo/custom_form_demo';
 import Maps from './MapsDemo/maps_demo';
 
 const AppNavigator = createStackNavigator({
-  Home: { screen: Home },
-  LispDemo: { screen: LispDemo, navigationOptions: {title: 'Lisp Demo'}},
-  MQTTList: {screen: MQTTList},
-  CustomForm: {screen: CustomForm},
-  Maps: {screen: Maps}
+	Home: { screen: Home },
+	LispDemo: { screen: LispDemo, navigationOptions: { title: 'Lisp Demo' } },
+	MQTTList: { screen: MQTTList },
+	CustomForm: { screen: CustomForm },
+	Maps: { screen: Maps }
 });
 
 export default createAppContainer(AppNavigator);

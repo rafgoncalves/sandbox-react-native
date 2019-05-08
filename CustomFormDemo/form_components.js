@@ -1,48 +1,45 @@
 import React from 'react';
-import {Text, Switch as RNSwitch, TextInput as RNTextInput} from 'react-native';
+import { Text, Switch as RNSwitch, TextInput as RNTextInput } from 'react-native';
 import Styles from '../styles';
-import {fieldfy} from './form_utils';
+import { fieldfy } from './form_utils';
 
-function get_component(name){
-  const components = {
-      Switch: Switch,
-      TextInput: TextInput,
-    }
+function get_component(name) {
+	const components = {
+		Switch: Switch,
+		TextInput: TextInput
+	};
 
-  return components[name];
+	return components[name];
 }
 
 const Switch = fieldfy((props) => {
-    const { field: {value, error, touched, onBlur, onChange}, label} = props;
+	const { field: { value, error, touched, onBlur, onChange }, label } = props;
 
-    return (
-      <React.Fragment>
-        <RNSwitch
-          value={value}
-          onValueChange={(...params) => {onBlur(...params); onChange(...params);}}
-          // ios_backgroundColor={error ? 'red' : 'trasparent'}
-        />
-        {error && touched ? <Text style={Styles.error_msg}>{error}</Text> : null}
-        <Text>{label}</Text>
-      </React.Fragment>
-    );
-  }
-);
+	return (
+		<React.Fragment>
+			<RNSwitch
+				value={value}
+				onValueChange={(...params) => {
+					onBlur(...params);
+					onChange(...params);
+				}}
+				// ios_backgroundColor={error ? 'red' : 'trasparent'}
+			/>
+			{error && touched ? <Text style={Styles.error_msg}>{error}</Text> : null}
+			<Text>{label}</Text>
+		</React.Fragment>
+	);
+});
 
 const TextInput = fieldfy((props) => {
-    const { field: {value, onBlur, onChange}, label} = props;
+	const { field: { value, onBlur, onChange }, label } = props;
 
-    return (
-      <React.Fragment>
-        <Text>{label}</Text>
-        <RNTextInput
-          value={value}
-          onChangeText={onChange}
-          onBlur={onBlur}
-        />
-      </React.Fragment>
-    );
-  }
-);
+	return (
+		<React.Fragment>
+			<Text>{label}</Text>
+			<RNTextInput value={value} onChangeText={onChange} onBlur={onBlur} />
+		</React.Fragment>
+	);
+});
 
-export {get_component, Switch, TextInput};
+export { get_component, Switch, TextInput };
