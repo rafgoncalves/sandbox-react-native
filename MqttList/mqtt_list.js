@@ -7,56 +7,55 @@ import { Client, Message } from 'paho-mqtt';
 // http://www.hivemq.com/demos/websocket-client/
 
 export default function MQTTList(props) {
-	function startMQTTClient() {
-		mqtt_client.onConnectionLost = (responseObject) => {
+	function clearTestMessageInterval() {
+		return interval_handle && clearInterval(interval_handle);
+	}
+
+	// We need these to be global so we can pass them to PahoClient
+	[ mqtt_messages, setMQTTMessages ] = useState(new Array());
+
+	useEffect(() => {
+		console.log('use effect start');
+		const client = new Client((host = 'broker.mqttdashboard.com'), (port = 8000), (clientId = 'reactNativeRafael'));
+
+		client.onConnectionLost = (responseObject) => {
 			if (responseObject.errorCode !== 0) {
 				console.log('onConnectionLost:' + responseObject.errorMessage);
 			}
 		};
 
-		mqtt_client.onMessageArrived = (message) => {
+		client.onMessageArrived = (message) => {
 			console.log('< ' + message.payloadString);
 
 			setMQTTMessages([ ...mqtt_messages, { key: message.payloadString + ' QoS: ' + message.qos } ]);
 		};
 
-		mqtt_client.onMessageDelivered = (message) => console.log('> ' + message.payloadString);
+		client.onMessageDelivered = (message) => console.log('> ' + message.payloadString);
 
-		mqtt_client.connect({
+		client.connect({
 			onSuccess: (onSuccess = () => {
-				mqtt_client.subscribe('flatlist', { qos: 2 });
+				client.subscribe('flatlist', { qos: 2 });
+
+				let i = 0;
 
 				interval_handle = setInterval(() => {
-					if (mqtt_client.isConnected()) {
-						message = new Message('Test message #' + mqtt_messages.length);
+					if (client.isConnected()) {
+						const message = new Message('Test message #' + i++);
 						message.destinationName = 'flatlist';
-						mqtt_client.send(message);
+						client.send(message);
 					}
 				}, 200);
 
-				mqtt_client.onConnectionLost = () => clearTestMessageInterval();
+				client.onConnectionLost = () => clearTestMessageInterval();
 			})
 		});
-	}
 
-	function clearTestMessageInterval() {
-		return interval_handle && clearInterval(interval_handle);
-	}
-
-	const [ mqtt_client ] = useState(
-		new Client((host = 'broker.mqttdashboard.com'), (port = 8000), (clientId = 'reactNativeRafael'))
-	);
-
-	const [ mqtt_messages, setMQTTMessages ] = useState(new Array());
-
-	useEffect(() => {
-		startMQTTClient();
-
-		return () => {
+		return function() {
+			console.log('use effect end');
 			clearTestMessageInterval();
-			mqtt_client.disconnect();
+			client.disconnect();
 		};
-	});
+	}, []);
 
 	return (
 		<View style={Styles.container}>
