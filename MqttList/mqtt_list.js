@@ -14,12 +14,13 @@ export default class MQTTList extends Component {
 	constructor(props) {
 		super(props);
 
-		(this.mqtt_client = new Client(
+		this.mqtt_client = new Client(
 			(host = 'broker.mqttdashboard.com'),
 			(port = 8000),
 			(clientId = 'reactNativeRafael')
-		)),
-			(this.mqtt_subscription_topic = 'flatlist');
+		);
+
+		this.mqtt_subscription_topic = 'flatlist';
 
 		this.state = {
 			mqtt_messages: new Array()

@@ -43,7 +43,7 @@ export default (custom_form = {
 			name: 'Outer',
 			label: 'Manage your outer toggles',
 			max: 2,
-			enable: _(true),
+			enable: _([ 'let', [ 'target', [ 'get', 'values', [ '`', 'termsAndConditionsAccepted' ] ] ], 'target' ]),
 			fields: [
 				{
 					type: 'Switch',

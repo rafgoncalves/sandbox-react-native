@@ -83,7 +83,6 @@ function RenderFieldTree(props) {
 
 export default function DynamicForm(props) {
 	const { spec } = props;
-
 	const [ enabled, setEnabled ] = useState(new Set());
 
 	const _set_enabled = (fieldname, flag) => {
