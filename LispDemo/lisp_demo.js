@@ -36,9 +36,12 @@ function LispDemoScreen(props) {
 		})()
 	);
 	const [ colorGenerator ] = useState(cycle(colors));
-	const [ color, setColor ] = useState(colorGenerator.next().value);
+	const [ color, setColor ] = useState();
 	const [ randomNumber, setRandomNumber ] = useState(m.eval([ 'random' ]));
 	const [ rotation ] = useState(new Animated.Value(0));
+
+	// Calling useState with the iterator.next() caused it to be evaluated
+	color ? null : setColor(colorGenerator.next().value);
 
 	return (
 		<View style={Styles.container}>

@@ -25,12 +25,12 @@ export default function MQTTList(props) {
 		};
 
 		client.onMessageArrived = (message) => {
-			console.log('< ' + message.payloadString);
+			console.log('R: ' + message.payloadString);
 
 			setMQTTMessages([ ...mqtt_messages, { key: message.payloadString + ' QoS: ' + message.qos } ]);
 		};
 
-		client.onMessageDelivered = (message) => console.log('> ' + message.payloadString);
+		client.onMessageDelivered = (message) => console.log('S: ' + message.payloadString);
 
 		client.connect({
 			onSuccess: (onSuccess = () => {
